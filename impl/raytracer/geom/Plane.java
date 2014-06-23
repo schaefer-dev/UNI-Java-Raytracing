@@ -3,13 +3,12 @@ package raytracer.geom;
 import raytracer.core.Hit;
 import raytracer.core.Obj;
 import raytracer.core.def.LazyHitTest;
-import raytracer.math.Constants;
+//import raytracer.math.Constants;
 import raytracer.math.Point;
 import raytracer.math.Ray;
 import raytracer.math.Vec2;
 import raytracer.math.Vec3;
-import raytracer.math.Vec4;
-import raytracer.geom.Util;
+//import raytracer.math.Vec4;
 
 class Plane extends BBoxedPrimitive {
 	private final Vec3 n;
@@ -18,6 +17,7 @@ class Plane extends BBoxedPrimitive {
 
 	public Plane(final Point a, final Point b, final Point c) {
 		/* TODO BBox super ?? */
+		super(BBox.INF); // BBox Unendlich?
 
 		Vec3 u = a.sub(b).normalized();
 		Vec3 v = a.sub(c).normalized();
@@ -30,7 +30,9 @@ class Plane extends BBoxedPrimitive {
 
 	public Plane(final Vec3 n, final Point p) {
 		/* TODO BBox?? */
-		this.n = n;
+		super(BBox.INF); // BBox Unendlich?
+		
+		this.n = n.normalized();
 		Point ursprung = new Point(0.0f, 0.0f, 0.0f);
 		Vec3 vecP = p.sub(ursprung); // VecP = Ortsvektor von Punkt p
 		this.d = vecP.dot(n);
@@ -40,9 +42,10 @@ class Plane extends BBoxedPrimitive {
 	@Override
 	public Hit hitTest(final Ray ray, final Obj obj, final float tmin,
 			final float tmax) {
-		return new LazyHitTest(obj) {
+		return new LazyHitTest(obj) {			
 			private Point point = null;
-			private float r, s, t;
+			// tmin und tmax noch einbauen??
+			private float r;
 
 			@Override
 			public float getParameter() {
@@ -58,9 +61,21 @@ class Plane extends BBoxedPrimitive {
 
 			@Override
 			protected boolean calculateHit() {
-				// TODO implement this Method
-				throw new UnsupportedOperationException(
-						"This method has not yet been implemented.");
+
+						// tmin und tmax noch einbauen??
+
+				float a = d - ray.base().dot(n);
+				float b = ray.dir().dot(n);
+				if (b == 0)
+					return false;
+				r = a / b;
+
+				if (r < 0)
+					return false;
+				else {
+					//r = r;
+					return true;
+				}				
 
 			}
 
@@ -71,9 +86,7 @@ class Plane extends BBoxedPrimitive {
 
 			@Override
 			public Vec2 getUV() {
-				// TODO implement this Method
-				return Util
-						.computePlaneUV(n, p, point);
+				return raytracer.geom.Util.computePlaneUV(n, p, point);
 			}
 		};
 	}
@@ -87,7 +100,10 @@ class Plane extends BBoxedPrimitive {
 	public boolean equals(final Object other) {
 		if (other instanceof Plane) {
 			final Plane cobj = (Plane) other;
-			return (cobj.n.equals(n) && (cobj.d == d)); // Müsste richtig sein?
+			return (cobj.n.equals(n) && (cobj.p.equals(p))); // Muesste richtig
+																// sein? (this
+																// in Klammern
+																// ergänzen?)
 		}
 		return false;
 	}
