@@ -10,6 +10,7 @@ import raytracer.math.Vec2;
 import raytracer.math.Vec3;
 //import raytracer.math.Vec4;
 
+// evt nur als Primitive anlegen?
 class Plane extends BBoxedPrimitive {
 	private final Vec3 n;
 	private final Point p;

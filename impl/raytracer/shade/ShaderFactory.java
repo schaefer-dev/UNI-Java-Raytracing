@@ -26,7 +26,12 @@ public final class ShaderFactory {
 	 */
 	public static Shader createCheckerBoard(final Shader a, final Shader b, final float scale) {
 		// TODO Implement this method
-		throw new UnsupportedOperationException("This method has not yet been implemented.");
+		if (a==null) throw new IllegalArgumentException("two shaders must be instance values");
+		if (b==null) throw new IllegalArgumentException("two shaders must be instance values");
+		if (scale<0) throw new IllegalArgumentException("The scale value is not a valid number");
+		if (scale==0) throw new UnsupportedOperationException("scale factor is equal to zero");
+		
+		return new CheckerBoard(a,b,scale);
 	}
 
 	/**
