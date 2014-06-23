@@ -44,7 +44,7 @@ public final class GeomFactory {
 	 */
 	public static Primitive createSphere(final Point m, final float r) {
 		// TODO Implement this method
-		throw new UnsupportedOperationException("This method has not yet been implemented.");
+		return new Sphere(r,m);
 	}
 
 	/**
