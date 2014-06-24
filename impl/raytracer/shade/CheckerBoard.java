@@ -17,7 +17,7 @@ public class CheckerBoard implements Shader {
 	 * @param color
 	 *            The color of this surface.
 	 */
-	
+
 	public CheckerBoard(final Shader shade1, final Shader shade2,
 			final float size) {
 		this.shade1 = shade1;
@@ -35,18 +35,20 @@ public class CheckerBoard implements Shader {
 	 * @return The computed color
 	 */
 	@Override
-	public Color shade (Hit hit, Trace trace) {
+	public Color shade(Hit hit, Trace trace) {
 
-		/*float x = hit.getPoint().x();
-		float z = hit.getPoint().z();*/
-		
+		/*
+		 * float x = hit.getPoint().x(); float z = hit.getPoint().z();
+		 */
+
 		float x = hit.getUV().get(0);
 		float z = hit.getUV().get(1);
 
-		int xys = (int)Math.floor(x/this.size) + (int)Math.floor(z/this.size);
-			if (xys % 2 ==0)
-				return shade1.shade(hit, trace);
-			return shade2.shade(hit, trace);
+		int xys = (int) Math.floor(x / this.size)
+				+ (int) Math.floor(z / this.size);
+		if (xys % 2 == 0)
+			return shade1.shade(hit, trace);
+		return shade2.shade(hit, trace);
 	}
 
 }

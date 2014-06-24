@@ -3,6 +3,7 @@ package raytracer.geom;
 import raytracer.core.Hit;
 import raytracer.core.Obj;
 import raytracer.core.def.LazyHitTest;
+import raytracer.math.Constants;
 //import raytracer.math.Constants;
 import raytracer.math.Point;
 import raytracer.math.Ray;
@@ -62,16 +63,16 @@ class Plane extends BBoxedPrimitive {
 
 			@Override
 			protected boolean calculateHit() {
-
-						// tmin und tmax noch einbauen??
+				
+				// TODO tmin und tmax einbauen
 
 				float a = d - ray.base().dot(n);
 				float b = ray.dir().dot(n);
-				if (b == 0)
+				if (Constants.isZero(b))
 					return false;
 				r = a / b;
 
-				if (r < 0)
+				if (r < Constants.EPS)
 					return false;
 				else {
 					//r = r;
@@ -87,7 +88,7 @@ class Plane extends BBoxedPrimitive {
 
 			@Override
 			public Vec2 getUV() {
-				return raytracer.geom.Util.computePlaneUV(n, p, point);
+						return raytracer.geom.Util.computePlaneUV(n, p, this.getPoint());
 			}
 		};
 	}

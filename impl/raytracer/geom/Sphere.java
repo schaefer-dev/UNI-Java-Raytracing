@@ -3,6 +3,7 @@ package raytracer.geom;
 import raytracer.core.Hit;
 import raytracer.core.Obj;
 import raytracer.core.def.LazyHitTest;
+import raytracer.math.Constants;
 //import raytracer.math.Constants;
 import raytracer.math.Point;
 import raytracer.math.Ray;
@@ -37,7 +38,7 @@ class Sphere extends BBoxedPrimitive {
 			@Override
 			public Point getPoint() {
 				if (point == null)
-					point = ray.eval(z).add(ray.invDir().scale(0.0001f)); 
+					point = ray.eval(z).add(ray.invDir().scale(0.0001f));
 				return point;
 			}
 
@@ -64,14 +65,14 @@ class Sphere extends BBoxedPrimitive {
 				float lamda2 = ((-b) - (float) Math.sqrt((b * b) - 4 * cquad)) / 2;
 
 				if (lamda1 <= lamda2) {
-					if (lamda1 < 0f)
+					if (lamda1 < Constants.EPS)
 						return false;
 					else {
 						z = lamda1;
 						return true;
 					}
 				} else {
-					if (lamda2 < 0f)
+					if (lamda2 < Constants.EPS)
 						return false;
 					else {
 						z = lamda2;
