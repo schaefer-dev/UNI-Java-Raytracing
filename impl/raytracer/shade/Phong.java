@@ -30,7 +30,19 @@ public class Phong implements Shader {
 
 	@Override
 	public Color shade(Hit hit, Trace trace) {
-		Color Ambient = this.ambient;
+		return this.AmbientColor(hit, trace).add(
+				this.DiffusColor(hit, trace)
+						.add(this.SpecularColor(hit, trace)));
+	}
+
+	
+	private Color AmbientColor(Hit hit, Trace trace) {
+		return this.ambient;
+	}
+
+	
+	private Color DiffusColor(Hit hit, Trace trace) {
+
 		// Farbe des darunterliegenden Shaders = 1 !!! (Überbleibsel aus altem
 		// Code in Beschreibung)
 		Collection<LightSource> Lichter = trace.getScene().getLightSources();
@@ -48,11 +60,26 @@ public class Phong implements Shader {
 						Constants.EPS,
 						hit.getNormal().normalized()
 								.dot(trace.getRay().dir().normalized())));
+		return Diffus;
+	}
 
-		Color Specular = helpLichter.scale(this.specular).scale(Math.max(Constants.EPS, /* an der Oberfläche gespiegelter Sehstrahl r */
-				.dot(trace.getRay().dir().normalized())));
+	
+	private Color SpecularColor(Hit hit, Trace trace) {
 
-		return Ambient.add(Diffus.add(Specular));
+		Collection<LightSource> Lichter = trace.getScene().getLightSources();
 
+		Color helpLichter = new Color(0, 0, 0);
+
+		while (Lichter.iterator().hasNext()) {
+			helpLichter.add(Lichter.iterator().next().getColor());
+		}
+
+		Color Specular = helpLichter.scale(this.specular).scale(
+				Math.max(Constants.EPS, /*
+										 * an der Oberfläche gespiegelter
+										 * Sehstrahl r
+										 */0));
+
+		return Specular;
 	}
 }
