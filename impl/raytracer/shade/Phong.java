@@ -10,6 +10,7 @@ import raytracer.core.Shader;
 import raytracer.core.Trace;
 import raytracer.math.Color;
 import raytracer.math.Constants;
+import raytracer.math.Vec3;
 
 public class Phong implements Shader {
 
@@ -30,56 +31,78 @@ public class Phong implements Shader {
 
 	@Override
 	public Color shade(Hit hit, Trace trace) {
-		return this.AmbientColor(hit, trace).add(
-				this.DiffusColor(hit, trace)
-						.add(this.SpecularColor(hit, trace)));
-	}
 
-	
-	private Color AmbientColor(Hit hit, Trace trace) {
-		return this.ambient;
-	}
+		// failt sobald es angewendet wird, könnte auch an Sphere liegen!!
 
-	
-	private Color DiffusColor(Hit hit, Trace trace) {
-
-		// Farbe des darunterliegenden Shaders = 1 !!! (Überbleibsel aus altem
-		// Code in Beschreibung)
+		/* eintreffende Lichtstrahlen-Farben berechnen */
 		Collection<LightSource> Lichter = trace.getScene().getLightSources();
-
 		Color helpLichter = new Color(0, 0, 0);
-
-		while (Lichter.iterator().hasNext()) {
+		Color helpLichter2 = new Color(0, 0, 0);
+		while (Lichter.iterator().hasNext())
 			helpLichter.add(Lichter.iterator().next().getColor());
-		}
-
-		// Winkel berechnen pro einzelner Lichtstrahl ? Übersprungen bis jetzt
-
-		Color Diffus = helpLichter.scale(this.diffuse).scale(
-				Math.max(
-						Constants.EPS,
-						hit.getNormal().normalized()
-								.dot(trace.getRay().dir().normalized())));
-		return Diffus;
-	}
-
+		helpLichter2.add(Lichter.iterator().next().getColor());
+		
+		
 	
-	private Color SpecularColor(Hit hit, Trace trace) {
 
-		Collection<LightSource> Lichter = trace.getScene().getLightSources();
+		/* Berechnung Iambient */
+		Color IAmbient = this.ambient;
+		
 
-		Color helpLichter = new Color(0, 0, 0);
+		float helpFloat1 = (diffuse * Math.max(0, trace.getRay().dir()
+				.normalized().dot(hit.getNormal().normalized())));
 
-		while (Lichter.iterator().hasNext()) {
-			helpLichter.add(Lichter.iterator().next().getColor());
-		}
+		// TODO Winkel ergänzen!
+		Color IDiffuse = helpLichter.mul(inner.shade(hit, trace)).scale(
+				helpFloat1);
 
-		Color Specular = helpLichter.scale(this.specular).scale(
-				Math.max(Constants.EPS, /*
-										 * an der Oberfläche gespiegelter
-										 * Sehstrahl r
-										 */0));
+		Vec3 helpVek2 = trace.getRay().base().sub(hit.getPoint());
 
-		return Specular;
+		Vec3 helpVek3 = trace.getRay().reflect(hit.getPoint(), hit.getNormal())
+				.dir();
+
+		Color ISpecular = helpLichter2.scale((float) (specular * Math.pow(
+				Math.max(0, diffuse * (helpVek3).angle(helpVek2)), shininess)));
+
+		return IAmbient.add(IDiffuse.add(ISpecular));
+
 	}
+
+	/*
+	 * private Color AmbientColor(Hit hit, Trace trace) { return this.ambient; }
+	 * 
+	 * 
+	 * private Color DiffusColor(Hit hit, Trace trace) {
+	 * 
+	 * // Farbe des darunterliegenden Shaders = 1 !!! (Überbleibsel aus altem //
+	 * Code in Beschreibung) Collection<LightSource> Lichter =
+	 * trace.getScene().getLightSources();
+	 * 
+	 * Color helpLichter = new Color(0, 0, 0);
+	 * 
+	 * while (Lichter.iterator().hasNext()) {
+	 * helpLichter.add(Lichter.iterator().next().getColor()); }
+	 * 
+	 * // Winkel berechnen pro einzelner Lichtstrahl ? Übersprungen bis jetzt
+	 * 
+	 * Color Diffus = helpLichter.scale(this.diffuse).scale( Math.max(
+	 * Constants.EPS, hit.getNormal().normalized()
+	 * .dot(trace.getRay().dir().normalized()))); return Diffus; }
+	 * 
+	 * 
+	 * private Color SpecularColor(Hit hit, Trace trace) {
+	 * 
+	 * Collection<LightSource> Lichter = trace.getScene().getLightSources();
+	 * 
+	 * Color helpLichter = new Color(0, 0, 0);
+	 * 
+	 * while (Lichter.iterator().hasNext()) {
+	 * helpLichter.add(Lichter.iterator().next().getColor()); }
+	 * 
+	 * Color Specular = helpLichter.scale(this.specular).scale(
+	 * Math.max(Constants.EPS, /* an der Oberfläche gespiegelter Sehstrahl r
+	 * 
+	 * 
+	 * return new Color(1,1,1); }
+	 */
 }
