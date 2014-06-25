@@ -35,24 +35,28 @@ public class Phong implements Shader {
 		// failt sobald es angewendet wird, könnte auch an Sphere liegen!!
 
 		/* eintreffende Lichtstrahlen-Farben berechnen */
+	
+		// LightSources kann man auch aus Trace bekommen
+		
 		Collection<LightSource> Lichter = trace.getScene().getLightSources();
-		Color helpLichter = new Color(0, 0, 0);
-		Color helpLichter2 = new Color(0, 0, 0);
-		while (Lichter.iterator().hasNext())
-			helpLichter.add(Lichter.iterator().next().getColor());
-		helpLichter2.add(Lichter.iterator().next().getColor());
+		int LichterAnzahl = Lichter.size();
 		
+		LightSource[] LichterArray = new LightSource[LichterAnzahl];
 		
+		Lichter.toArray(LichterArray);
+		
+		Color helpLichter = LichterArray[0].getColor();
+		Color helpLichter2 = LichterArray[0].getColor();
 	
 
-		/* Berechnung Iambient */
+		
 		Color IAmbient = this.ambient;
 		
 
 		float helpFloat1 = (diffuse * Math.max(0, trace.getRay().dir()
 				.normalized().dot(hit.getNormal().normalized())));
 
-		// TODO Winkel ergänzen!
+		// TODO IDiffuse für jede Lichtquelle berechnen die trifft
 		Color IDiffuse = helpLichter.mul(inner.shade(hit, trace)).scale(
 				helpFloat1);
 
@@ -65,6 +69,8 @@ public class Phong implements Shader {
 				Math.max(0, diffuse * (helpVek3).angle(helpVek2)), shininess)));
 
 		return IAmbient.add(IDiffuse.add(ISpecular));
+		
+		
 
 	}
 
