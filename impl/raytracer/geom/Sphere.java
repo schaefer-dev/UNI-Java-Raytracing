@@ -27,7 +27,7 @@ class Sphere extends BBoxedPrimitive {
 			final float tmax) {
 		return new LazyHitTest(obj) {
 			private Point point = null;
-			// tmin und tmax noch einbauen??
+
 			private float z;
 
 			@Override
@@ -38,43 +38,45 @@ class Sphere extends BBoxedPrimitive {
 			@Override
 			public Point getPoint() {
 				if (point == null)
-					point = ray.eval(z).add(ray.invDir().scale(0.0001f));
+					point = ray.eval(z).add(ray.invDir().scale(Constants.EPS));
 				return point;
 			}
 
 			@Override
 			protected boolean calculateHit() {
-				// TODO implement this Method
 
-				// tmin und tmax noch einbauen??
+				// TODO tmin und tmax noch einbauen??
 
-				float b = ray
-						.dir()
-						.scale(2)
-						.dot(ray.base().sub(c).x(), ray.base().sub(c).y(),
-								ray.base().sub(c).z(), ray.base().sub(c).w());
-				float cquad = ray.base().sub(c).add(new Vec3(0, 0, 0))
-						.dot(ray.base().sub(c).add(new Vec3(0, 0, 0)))
-						- r * r;
+				Vec3 vs2 = ray.dir().scale(2);
 
-				if (((b * b) - 4 * cquad) < 0)
+				Vec3 psck = ray.base().sub(c);
+
+				float b = vs2.dot(psck);
+
+				float cvar = psck.dot(psck) - r * r;
+
+				if (((b * b) - 4 * cvar) < 0)
 					return false;
 
-				float lamda1 = ((-b) + (float) Math.sqrt((b * b) - 4 * cquad)) / 2;
+				float lamda1 = ((-b) + (float) Math.sqrt((b * b) - 4 * cvar)) / 2;
 
-				float lamda2 = ((-b) - (float) Math.sqrt((b * b) - 4 * cquad)) / 2;
+				float lamda2 = ((-b) - (float) Math.sqrt((b * b) - 4 * cvar)) / 2;
 
 				if (lamda1 <= lamda2) {
-					if (lamda1 < Constants.EPS)
+					if ((lamda1 < Constants.EPS) | (lamda1 < tmin)
+							| (lamda1 > tmax)) {
+						z = lamda1;
 						return false;
-					else {
+					} else {
 						z = lamda1;
 						return true;
 					}
 				} else {
-					if (lamda2 < Constants.EPS)
+					if ((lamda2 < Constants.EPS) | (lamda2 < tmin)
+							| (lamda2 > tmax)) {
+						z = lamda2;
 						return false;
-					else {
+					} else {
 						z = lamda2;
 						return true;
 					}
@@ -85,7 +87,7 @@ class Sphere extends BBoxedPrimitive {
 			@Override
 			public Vec3 getNormal() {
 
-				return (point.sub(c)).normalized();
+				return (this.getPoint().sub(c).normalized());
 			}
 
 			@Override
