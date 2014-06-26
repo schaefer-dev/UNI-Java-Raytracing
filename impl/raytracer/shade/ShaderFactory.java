@@ -68,12 +68,13 @@ public final class ShaderFactory {
 	 *             infinity). In addition to that the shader and the ambient
 	 *             color must be instance values (not null).
 	 */
+	
 	public static Shader createPhong(final Shader inner, final Color ambient,
 			final float diffuse, final float specular, final float shininess) {
-		// TODO Implement this method
+		// Implement this method
 		if (Float.isNaN(diffuse) | Float.isNaN(specular)
-				| Float.isNaN(shininess) | (diffuse < Constants.EPS)
-				| (specular < Constants.EPS) | (shininess < Constants.EPS)
+				| Float.isNaN(shininess) | (diffuse < 0)
+				| (specular < 0) | (shininess < 0)
 				| (inner == null) | (ambient == null))
 			throw new IllegalArgumentException(
 					"no valid numbers / shader and/or Color == null");
