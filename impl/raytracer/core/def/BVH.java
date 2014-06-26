@@ -103,11 +103,11 @@ public class BVH extends BVHBase {
 	@Override
 	public int calculateSplitDimension(final Vec3 size) {
 		if ((size.x() >= size.y()) & (size.x() >= size.z()))
-			return 1;
+			return 0;
 		if ((size.y() >= size.x()) & (size.y() >= size.z()))
-			return 2;
+			return 1;
 		else
-			return 3;
+			return 2;
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class BVH extends BVHBase {
 			final int splitdim, final float splitpos) {
 		
 		List<Obj> helpList = this.getObjects();						// Nicht splitten anhand von mitte sondern an getMin() ecke
-		if (splitdim==1){
+		if (splitdim==0){
 			// x - achsen split
 			for (Obj o : helpList) {
 				Point m = o.bbox().getMin().add((o.bbox().getMax().sub(o.bbox().getMin()).scale(0.5f)));
@@ -126,7 +126,7 @@ public class BVH extends BVHBase {
 				
 			}
 		}
-		if (splitdim==2){
+		if (splitdim==1){
 			// y - achsen split
 			for (Obj o : helpList) {
 				Point m = o.bbox().getMin().add((o.bbox().getMax().sub(o.bbox().getMin()).scale(0.5f)));
@@ -136,7 +136,7 @@ public class BVH extends BVHBase {
 					b.add(o);
 			}
 		}
-		if (splitdim==3){
+		if (splitdim==2){
 			// z - achsen split
 			for (Obj o : helpList) {
 				Point m = o.bbox().getMin().add((o.bbox().getMax().sub(o.bbox().getMin()).scale(0.5f)));
