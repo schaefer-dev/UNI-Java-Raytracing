@@ -38,7 +38,7 @@ class Sphere extends BBoxedPrimitive {
 			@Override
 			public Point getPoint() {
 				if (point == null)
-					point = ray.eval(z).add(ray.invDir().scale(Constants.EPS));
+					point = ray.eval(z).add(ray.dir().neg().scale(Constants.EPS));  // evt ohne neg?
 				return point;
 			}
 
