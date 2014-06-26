@@ -27,7 +27,13 @@ public class BVH extends BVHBase {
 
 	@Override
 	public BBox bbox() {
-		BBox result = BBox.create(this.calculateMinMax().a,this.calculateMinMax().b);
+		
+		BBox hilf = objList.get(0).bbox();
+		
+		for (final Obj obj : objList) {	
+			hilf = BBox.surround(obj.bbox(), hilf);
+		}
+		BBox result = BBox.create(hilf.getMin(),hilf.getMax());
 
 		return result;
 
@@ -90,18 +96,12 @@ public class BVH extends BVHBase {
 	@Override
 	public Pair<Point, Point> calculateMinMax() {
 		
-		BBox result = objList.get(0).bbox();
+		BBox result = BBox.create(objList.get(0).bbox().getMin(),objList.get(0).bbox().getMin());
 		
 		for (final Obj obj : objList) {	
-			result = BBox.surround(obj.bbox(), result);
+			result = BBox.surround(BBox.create(obj.bbox().getMin(),obj.bbox().getMin()), result);
 		}
 		
-		System.out.print(result.getMin().x());
-		System.out.print(result.getMin().y());
-		System.out.print(result.getMin().z());
-		System.out.print(result.getMax().x());
-		System.out.print(result.getMax().y());
-		System.out.print(result.getMax().z());
 		return new Pair<Point, Point>(result.getMin(), result.getMax());
 
 	}
