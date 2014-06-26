@@ -90,12 +90,18 @@ public class BVH extends BVHBase {
 	@Override
 	public Pair<Point, Point> calculateMinMax() {
 		
-		BBox result = BBox.EMPTY;
+		BBox result = objList.get(0).bbox();
 		
 		for (final Obj obj : objList) {	
 			result = BBox.surround(obj.bbox(), result);
 		}
 		
+		System.out.print(result.getMin().x());
+		System.out.print(result.getMin().y());
+		System.out.print(result.getMin().z());
+		System.out.print(result.getMax().x());
+		System.out.print(result.getMax().y());
+		System.out.print(result.getMax().z());
 		return new Pair<Point, Point>(result.getMin(), result.getMax());
 
 	}
