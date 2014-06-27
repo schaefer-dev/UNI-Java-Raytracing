@@ -20,13 +20,17 @@ import raytracer.math.Vec3;
 public class BVH extends BVHBase {
 
 	private final List<Obj> objList;
+	private final BBox boundingBox;
 
 	public BVH() {
 		objList = new LinkedList<Obj>();
+		boundingBox = BBox.EMPTY;
 	}
 
 	@Override
 	public BBox bbox() {
+		
+		if (boundingBox == BBox.EMPTY){
 		
 		BBox hilf = objList.get(0).bbox();
 		
@@ -36,6 +40,9 @@ public class BVH extends BVHBase {
 		BBox result = BBox.create(hilf.getMin(),hilf.getMax());
 
 		return result;
+		}
+		else
+			return boundingBox;
 	}
 
 	/**
@@ -65,30 +72,24 @@ public class BVH extends BVHBase {
 		
 			int dimension = this.calculateSplitDimension(diag);
 			
-			float mid=0f;
-			
-			if (dimension==1){
-				//x-achsen split
-				mid = (this.bbox().getMin().x()+this.bbox().getMax().x())/2;
-			}
-			
-			if (dimension==2){
-				//y-achsen split
-				mid = (this.bbox().getMin().y()+this.bbox().getMax().y())/2;	
-			}
-			
-			if (dimension==3){
-				//z-achsen split
-				mid = (this.bbox().getMin().z()+this.bbox().getMax().z())/2;
-			}
+			float mid = (this.bbox().getMin().get(dimension)+this.bbox().getMax().get(dimension))/2;
+
 			
 			distributeObjects(a, b, dimension, mid);
 			
 			objList.clear();
-			a.buildBVH();
-			b.buildBVH();
-			objList.add(a);
-			objList.add(b);
+			if (a.objList.isEmpty())
+				objList.add(b);
+			else{
+				if (b.objList.isEmpty())
+					objList.add(a);
+				else{
+					a.buildBVH();
+					b.buildBVH();
+					objList.add(a);
+					objList.add(b);
+				}
+			}
 
 	}
 
