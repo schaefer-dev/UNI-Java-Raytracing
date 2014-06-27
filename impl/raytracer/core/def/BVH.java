@@ -164,12 +164,12 @@ public class BVH extends BVHBase {
 			List<Obj> helpList = this.getObjects();
 
 			for (Obj o : helpList) {
-
 				Hit helpHit = o.hit(ray, obj, tmin, tmax);
 				if (helpHit.hits()) {
 					return helpHit;
-				}
-			}
+				}		
+			}	
+			
 		}
 		return Hit.No.get();
 	}
