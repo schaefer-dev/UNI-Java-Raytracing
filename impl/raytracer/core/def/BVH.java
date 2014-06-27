@@ -6,6 +6,7 @@ import java.util.List;
 import raytracer.core.Hit;
 import raytracer.core.Obj;
 import raytracer.geom.BBox;
+import raytracer.geom.Primitive;
 import raytracer.math.Pair;
 import raytracer.math.Point;
 import raytracer.math.Ray;
@@ -159,9 +160,32 @@ public class BVH extends BVHBase {
 	public Hit hit(final Ray ray, final Obj obj, final float tmin,
 			final float tmax) {									/* obj -> The object to compute the intersection with*/ 
 		// implemened
+		
+		float ttmax=tmax;
+		
+		List<Obj> helpList = this.getObjects();
+		
+		if (helpList.get(0) instanceof Primitive){
+		
 		if (this.bbox().hit(ray, tmin, tmax).hits()) {
 			
-			List<Obj> helpList = this.getObjects();
+			Hit nearest = Hit.No.get();
+			for (final Obj p : helpList) {
+				final Hit hit = p.hit(ray, p, tmin, ttmax);
+				if (hit.hits()) {
+					final float t = hit.getParameter();
+					if (t < ttmax) {
+						nearest = hit;
+						ttmax = t;
+					}
+				}
+			}
+
+			return nearest;
+		}
+		}
+		else{
+
 
 			for (Obj o : helpList) {
 				Hit helpHit = o.hit(ray, obj, tmin, tmax);
@@ -172,6 +196,7 @@ public class BVH extends BVHBase {
 			
 		}
 		return Hit.No.get();
+		
 	}
 
 	@Override
