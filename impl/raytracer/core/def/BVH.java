@@ -36,7 +36,6 @@ public class BVH extends BVHBase {
 		BBox result = BBox.create(hilf.getMin(),hilf.getMax());
 
 		return result;
-
 	}
 
 	/**
@@ -108,9 +107,9 @@ public class BVH extends BVHBase {
 
 	@Override
 	public int calculateSplitDimension(final Vec3 size) {
-		if ((size.x() >= size.y()) & (size.x() >= size.z()))
+		if ((size.get(0) >= size.get(1)) & (size.get(0) >= size.get(2)))
 			return 0;
-		if ((size.y() >= size.x()) & (size.y() >= size.z()))
+		if ((size.get(1) >= size.get(0)) & (size.get(1) >= size.get(2)))
 			return 1;
 		else
 			return 2;
