@@ -161,7 +161,7 @@ public class BVH extends BVHBase {
 			final float tmax) {									/* obj -> The object to compute the intersection with*/ 
 		// implemened
 		
-		float ttmax=tmax;
+		float ttmax=tmax;										// fehlt ein Hit.no.get()
 		
 		List<Obj> helpList = this.getObjects();
 		
@@ -183,6 +183,7 @@ public class BVH extends BVHBase {
 
 			return nearest;
 		}
+		return Hit.No.get();
 		}
 		else{
 
