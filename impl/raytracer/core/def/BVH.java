@@ -160,30 +160,31 @@ public class BVH extends BVHBase {
 	public Hit hit(final Ray ray, final Obj obj, final float tmin,
 			final float tmax) {									/* obj -> The object to compute the intersection with*/ 
 		// implemened
-		
+		System.out.print("entered  ");
 		float ttmax=tmax;										// fehlt ein Hit.no.get()
 		
 		List<Obj> helpList = this.getObjects();
 		
 		if (helpList.get(0) instanceof Primitive){
-		
-		if (this.bbox().hit(ray, tmin, tmax).hits()) {
-			
 			Hit nearest = Hit.No.get();
-			for (final Obj p : helpList) {
-				final Hit hit = p.hit(ray, p, tmin, ttmax);
-				if (hit.hits()) {
-					final float t = hit.getParameter();
-					if (t < ttmax) {
-						nearest = hit;
-						ttmax = t;
+			if (this.bbox().hit(ray, tmin, tmax).hits()) {
+			
+			
+				for (final Obj p : helpList) {
+					final Hit hit = p.hit(ray, p, tmin, ttmax);
+					if (hit.hits()) {
+						final float t = hit.getParameter();
+						if (t < ttmax) {
+							nearest = hit;
+							ttmax = t;
+						}
 					}
 				}
-			}
 
+		
+			}
+			System.out.print("exit  ");
 			return nearest;
-		}
-		return Hit.No.get();
 		}
 		else{
 
@@ -191,14 +192,16 @@ public class BVH extends BVHBase {
 			for (Obj o : helpList) {
 				Hit helpHit = o.hit(ray, obj, tmin, tmax);
 				if (helpHit.hits()) {
+					System.out.print("exit  ");
 					return helpHit;
 				}		
 			}	
-			
+			System.out.print("exit  ");
+			return Hit.No.get();
 		}
-		return Hit.No.get();
 		
-	}
+		
+	} 
 
 	@Override
 	public List<Obj> getObjects() {
