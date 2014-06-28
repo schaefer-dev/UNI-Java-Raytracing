@@ -55,7 +55,6 @@ public class BVH extends BVHBase {
 	@Override
 	public void add(final Obj prim) {
 		objList.add(prim);
-
 	}
 
 	/**
@@ -63,7 +62,8 @@ public class BVH extends BVHBase {
 	 */
 	@Override
 	public void buildBVH() {
-
+		
+	
 		if (this.getObjects().size() > THRESHOLD){
 			
 		
@@ -82,16 +82,7 @@ public class BVH extends BVHBase {
 			objList.clear();
 			boundingBox = BBox.EMPTY;
 			
-			// bei Jannis klappt es so muss also fehler sein bei distributeObjects oder splitdimension
 			
-			
-			/*if (a.objList.isEmpty())
-				System.out.print("a empty");
-			if (b.objList.isEmpty())
-				System.out.print("b empty");
-			objList.add(a);
-			objList.add(b);
-			*/
 			 //so komplexer sonderfall nicht nötig?
 			if (a.objList.isEmpty())
 				objList.add(b);
@@ -112,11 +103,12 @@ public class BVH extends BVHBase {
 			}
 
 		}
-		System.out.print("builded   ");
+		//System.out.print("builded   "); */
 	}
 
 	@Override
 	public Pair<Point, Point> calculateMinMax() {
+		
 		
 		BBox result = BBox.create(objList.get(0).bbox().getMin(),objList.get(0).bbox().getMin());
 		
@@ -130,9 +122,9 @@ public class BVH extends BVHBase {
 
 	@Override
 	public int calculateSplitDimension(final Vec3 size) {
-		if ((size.get(0) >= size.get(1)) & (size.get(0) >= size.get(2)))
+		if ((Math.abs(size.get(0)) >= Math.abs(size.get(1))) & Math.abs(size.get(0)) >= Math.abs(size.get(2)))
 			return 0;
-		if ((size.get(1) >= size.get(0)) & (size.get(1) >= size.get(2)))
+		if ((Math.abs(size.get(1)) >= Math.abs(size.get(0))) & (Math.abs(size.get(1)) >= Math.abs(size.get(2))))
 			return 1;
 		else
 			return 2;
@@ -160,16 +152,19 @@ public class BVH extends BVHBase {
 	public Hit hit(final Ray ray, final Obj obj, final float tmin,
 			final float tmax) {									/* obj -> The object to compute the intersection with*/ 
 		// implemened
-		
+			
+	
 		float ttmax=tmax;										
 		
 		List<Obj> helpList = this.getObjects();
 		
+		Hit nearest = Hit.No.get();
+		
 		if (helpList.get(0) instanceof Primitive){ 
-			Hit nearest = Hit.No.get();
+			
 			if (this.bbox().hit(ray, tmin, ttmax).hits()) {
 			
-				for (final Obj p : helpList) {
+				for (Obj p : helpList) {
 					final Hit helpHit = p.hit(ray, p, tmin, ttmax);
 					if (helpHit.hits()) {
 						final float t = helpHit.getParameter();
@@ -180,26 +175,27 @@ public class BVH extends BVHBase {
 					}
 				}
 
-		
 			}
-			System.out.print("pHit");
+			//if (nearest ==  Hit.No.get())
+				//System.out.print("noHit  ");
+			//else
+				//System.out.print("pHit  ");
 			return nearest;
 		}
 		else{ // hier failt er NUR hier
 			
-			Hit nearest = Hit.No.get();
 			Obj helpObj = null;
 
 			if (this.bbox().hit(ray,tmin,ttmax).hits()){
 				
-				for (Obj o : helpList) {
-					Hit helpHit = o.hit(ray, o, tmin, ttmax);
+				for (Obj bva : helpList) {
+					Hit helpHit = bva.hit(ray, bva, tmin, ttmax);
 					if (helpHit.hits()) {
 						final float t = helpHit.getParameter();
 						if (t < ttmax) {
 							nearest = helpHit;
 							ttmax = t;
-							helpObj=o;
+							helpObj=bva;
 					}		
 				}	
 			}
