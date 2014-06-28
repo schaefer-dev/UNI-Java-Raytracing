@@ -33,17 +33,24 @@ public class BVH extends BVHBase {
 		
 		if (boundingBox == BBox.EMPTY){
 		
-		BBox hilf = objList.get(0).bbox();
+		Point hilfmin = objList.get(0).bbox().getMin();
+		Point hilfmax = objList.get(0).bbox().getMax();
+		Point hilfmin2;
+		Point hilfmax2;
 		
 		for (final Obj obj : objList) {	
-			hilf = BBox.surround(obj.bbox(), hilf);
+			hilfmin2 = obj.bbox().getMin();
+			hilfmax2 = obj.bbox().getMax();
+			hilfmin = hilfmin.min(hilfmin2);
+			hilfmax = hilfmax.max(hilfmax2);
 		}
-		BBox result = BBox.create(hilf.getMin(),hilf.getMax());
+		boundingBox = BBox.create(hilfmin,hilfmax);
 
-		return result;
+		
 		}
-		else
-			return boundingBox;
+		
+		return boundingBox;
+				
 	}
 
 	/**
@@ -62,19 +69,38 @@ public class BVH extends BVHBase {
 	 */
 	@Override
 	public void buildBVH() {
-		
+		/*
+		Pair<Point, Point> pair = calculateMinMax();
+		if (!pair.a.equals(pair.b)) {
+			int splitdim = calculateSplitDimension(pair.a.sub(pair.b));
+			float splitpos = 0;
+				splitpos = (pair.b.get(splitdim) + pair.a.get(splitdim)) / 2;
+			BVH a = new BVH();
+			BVH b = new BVH();
+			distributeObjects(a, b, splitdim, splitpos);
+			List<Obj> prim2 = new LinkedList<Obj>();
+			prim2.add(a);
+			prim2.add(b);
+			objList = prim2;
+			if (a.objList.size() > THRESHOLD) {
+				a.buildBVH();
+			}
+			if (b.objList.size() > THRESHOLD) {
+				b.buildBVH();
+			}
+		} */
+		Pair<Point, Point> checkMinMax = calculateMinMax();	
 	
-		if (this.getObjects().size() > THRESHOLD){
-			
+		if ((this.getObjects().size() > THRESHOLD)&(!(checkMinMax.a.equals(checkMinMax.b)))) {
 		
-		BVH b = new BVH();
-		BVH a = new BVH();
+			BVH b = new BVH();
+			BVH a = new BVH();
 			
 			Vec3 diag = this.bbox().getMax().sub(this.bbox().getMin());
 		
 			int dimension = this.calculateSplitDimension(diag);
 			
-			float mid = (this.bbox().getMin().get(dimension)+this.bbox().getMax().get(dimension))/2;
+			float mid = (checkMinMax.b.get(dimension)+checkMinMax.a.get(dimension))/2;
 
 			
 			distributeObjects(a, b, dimension, mid);
@@ -83,7 +109,6 @@ public class BVH extends BVHBase {
 			boundingBox = BBox.EMPTY;
 			
 			
-			 //so komplexer sonderfall nicht nötig?
 			if (a.objList.isEmpty())
 				objList.add(b);
 			else{
@@ -96,9 +121,6 @@ public class BVH extends BVHBase {
 					b.boundingBox=b.bbox();
 					objList.add(a);
 					objList.add(b);
-					Point getmin = (BBox.create(a.bbox().getMin(),b.bbox().getMin()).getMin());
-					Point getmax = (BBox.create(a.bbox().getMin(),b.bbox().getMin()).getMin());
-					this.boundingBox=BBox.create(getmin,getmax);
 				}
 			}
 
@@ -176,13 +198,9 @@ public class BVH extends BVHBase {
 				}
 
 			}
-			//if (nearest ==  Hit.No.get())
-				//System.out.print("noHit  ");
-			//else
-				//System.out.print("pHit  ");
 			return nearest;
 		}
-		else{ // hier failt er NUR hier
+		else{ 
 			
 			Obj helpObj = null;
 
