@@ -91,18 +91,17 @@ public class OBJReader {
 		
 		pointList.add(new Point(0,0,0));
 			
-		
 		/* ab hier schleife über File */
 		
-		while (sc.hasNextLine()){
+		while (sc.hasNext()){
 			
 			String c = sc.next();
 			if(c.matches("#"))
 				sc.nextLine();
 			if(c.matches("v"))
-				pointList.add(new Point(sc.nextFloat(), sc.nextFloat(), sc.nextFloat()));
+				pointList.add(new Point(sc.nextFloat()*scale, sc.nextFloat()*scale, sc.nextFloat()*scale).add(translate));
 			if(c.matches("f")) 
-				accelerator.add(new StandardObj(GeomFactory.createTriangle(pointList.get(sc.nextInt()).scale(scale).add(translate), pointList.get(sc.nextInt()).scale(scale).add(translate), pointList.get(sc.nextInt()).scale(scale).add(translate)),shader));
+				accelerator.add(new StandardObj(GeomFactory.createTriangle(pointList.get(sc.nextInt()), pointList.get(sc.nextInt()), pointList.get(sc.nextInt())),shader));
 			
 		}		
 	    System.out.print("Reader finished");

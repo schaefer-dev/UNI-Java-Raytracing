@@ -63,6 +63,9 @@ public class BVH extends BVHBase {
 	 */
 	@Override
 	public void buildBVH() {
+		
+		
+		
 		if (this.getObjects().size() <= THRESHOLD){
 			return;
 		}
@@ -121,6 +124,7 @@ public class BVH extends BVHBase {
 	public void distributeObjects(final BVHBase a, final BVHBase b,
 			final int splitdim, final float splitpos) {
 		
+		
 		List<Obj> helpList = this.getObjects();						// Nicht splitten anhand von mitte sondern an getMin() ecke
 		if (splitdim==0){
 			// x - achsen split
@@ -160,14 +164,15 @@ public class BVH extends BVHBase {
 	public Hit hit(final Ray ray, final Obj obj, final float tmin,
 			final float tmax) {									/* obj -> The object to compute the intersection with*/ 
 		// implemened
-		System.out.print("entered  ");
-		float ttmax=tmax;										// fehlt ein Hit.no.get()
+
+			
+		float ttmax=tmax;										
 		
 		List<Obj> helpList = this.getObjects();
 		
 		if (helpList.get(0) instanceof Primitive){
 			Hit nearest = Hit.No.get();
-			if (this.bbox().hit(ray, tmin, tmax).hits()) {
+			if (this.bbox().hit(ray, tmin, ttmax).hits()) {
 			
 			
 				for (final Obj p : helpList) {
@@ -183,25 +188,36 @@ public class BVH extends BVHBase {
 
 		
 			}
-			System.out.print("exit  ");
 			return nearest;
 		}
 		else{
+			
+			Hit nearest = Hit.No.get();
+			Obj helpObj = null;
 
-
-			for (Obj o : helpList) {
-				Hit helpHit = o.hit(ray, obj, tmin, tmax);
-				if (helpHit.hits()) {
-					System.out.print("exit  ");
-					return helpHit;
-				}		
-			}	
-			System.out.print("exit  ");
+			if (this.bbox().hit(ray,tmin,ttmax).hits()){
+				
+				for (Obj o : helpList) {
+					Hit helpHit = o.bbox().hit(ray, tmin, ttmax);
+					if (helpHit.hits()) {
+						final float t = helpHit.getParameter();
+						if (t < ttmax) {
+							nearest = helpHit;
+							ttmax = t;
+							helpObj=o;
+					}		
+				}	
+			}
+			if (helpObj==null)
+				return Hit.No.get();
+			return helpObj.hit(ray, helpObj, tmin, ttmax);
+			
+		}
 			return Hit.No.get();
 		}
 		
-		
 	} 
+	
 
 	@Override
 	public List<Obj> getObjects() {
