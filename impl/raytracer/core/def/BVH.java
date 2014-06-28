@@ -20,8 +20,8 @@ import raytracer.math.Vec3;
 // TODO calcMinMax
 public class BVH extends BVHBase {
 
-	private final List<Obj> objList;
-	private final BBox boundingBox;
+	private List<Obj> objList;
+	private BBox boundingBox;
 
 	public BVH() {
 		objList = new LinkedList<Obj>();
@@ -63,12 +63,10 @@ public class BVH extends BVHBase {
 	 */
 	@Override
 	public void buildBVH() {
+
+		if (this.getObjects().size() > THRESHOLD){
+			
 		
-		
-		
-		if (this.getObjects().size() <= THRESHOLD){
-			return;
-		}
 		BVH b = new BVH();
 		BVH a = new BVH();
 			
@@ -82,6 +80,19 @@ public class BVH extends BVHBase {
 			distributeObjects(a, b, dimension, mid);
 			
 			objList.clear();
+			boundingBox = BBox.EMPTY;
+			
+			// bei Jannis klappt es so muss also fehler sein bei distributeObjects oder splitdimension
+			
+			
+			/*if (a.objList.isEmpty())
+				System.out.print("a empty");
+			if (b.objList.isEmpty())
+				System.out.print("b empty");
+			objList.add(a);
+			objList.add(b);
+			*/
+			 //so komplexer sonderfall nicht nötig?
 			if (a.objList.isEmpty())
 				objList.add(b);
 			else{
@@ -89,12 +100,19 @@ public class BVH extends BVHBase {
 					objList.add(a);
 				else{
 					a.buildBVH();
+					a.boundingBox=a.bbox();
 					b.buildBVH();
+					b.boundingBox=b.bbox();
 					objList.add(a);
 					objList.add(b);
+					Point getmin = (BBox.create(a.bbox().getMin(),b.bbox().getMin()).getMin());
+					Point getmax = (BBox.create(a.bbox().getMin(),b.bbox().getMin()).getMin());
+					this.boundingBox=BBox.create(getmin,getmax);
 				}
 			}
 
+		}
+		System.out.print("builded   ");
 	}
 
 	@Override
@@ -124,63 +142,39 @@ public class BVH extends BVHBase {
 	public void distributeObjects(final BVHBase a, final BVHBase b,
 			final int splitdim, final float splitpos) {
 		
+		List<Obj> helpList = this.getObjects();						// Nicht splitten anhand von mitte sondern an getMin() Ecke!
 		
-		List<Obj> helpList = this.getObjects();						// Nicht splitten anhand von mitte sondern an getMin() ecke
-		if (splitdim==0){
 			// x - achsen split
 			for (Obj o : helpList) {
-				Point m = o.bbox().getMin().add((o.bbox().getMax().sub(o.bbox().getMin()).scale(0.5f)));
-				if (m.x()<splitpos)
-					a.add(o);
-				else 
-					b.add(o);
-				
-			}
-		}
-		if (splitdim==1){
-			// y - achsen split
-			for (Obj o : helpList) {
-				Point m = o.bbox().getMin().add((o.bbox().getMax().sub(o.bbox().getMin()).scale(0.5f)));
-				if (m.y()<splitpos)
+				// wenn Mittelpunkt: Point m = o.bbox().getMin().add((o.bbox().getMax().sub(o.bbox().getMin()).scale(0.5f)));
+				Point m = o.bbox().getMin();
+				if (m.get(splitdim)<splitpos)
 					a.add(o);
 				else 
 					b.add(o);
 			}
-		}
-		if (splitdim==2){
-			// z - achsen split
-			for (Obj o : helpList) {
-				Point m = o.bbox().getMin().add((o.bbox().getMax().sub(o.bbox().getMin()).scale(0.5f)));
-				if (m.z()<splitpos)
-					a.add(o);
-				else 
-					b.add(o);
-			
-			}
-		}	
+		
 	}
 
 	@Override
 	public Hit hit(final Ray ray, final Obj obj, final float tmin,
 			final float tmax) {									/* obj -> The object to compute the intersection with*/ 
 		// implemened
-
-			
+		
 		float ttmax=tmax;										
 		
 		List<Obj> helpList = this.getObjects();
 		
-		if (helpList.get(0) instanceof Primitive){
+		if (helpList.get(0) instanceof Primitive){ 
 			Hit nearest = Hit.No.get();
 			if (this.bbox().hit(ray, tmin, ttmax).hits()) {
 			
-			
 				for (final Obj p : helpList) {
-					final Hit hit = p.hit(ray, p, tmin, ttmax);
-					if (hit.hits()) {
-						final float t = hit.getParameter();
+					final Hit helpHit = p.hit(ray, p, tmin, ttmax);
+					if (helpHit.hits()) {
+						final float t = helpHit.getParameter();
 						if (t < ttmax) {
-							nearest = hit;
+							nearest = helpHit;
 							ttmax = t;
 						}
 					}
@@ -188,9 +182,10 @@ public class BVH extends BVHBase {
 
 		
 			}
+			System.out.print("pHit");
 			return nearest;
 		}
-		else{
+		else{ // hier failt er NUR hier
 			
 			Hit nearest = Hit.No.get();
 			Obj helpObj = null;
@@ -198,7 +193,7 @@ public class BVH extends BVHBase {
 			if (this.bbox().hit(ray,tmin,ttmax).hits()){
 				
 				for (Obj o : helpList) {
-					Hit helpHit = o.bbox().hit(ray, tmin, ttmax);
+					Hit helpHit = o.hit(ray, o, tmin, ttmax);
 					if (helpHit.hits()) {
 						final float t = helpHit.getParameter();
 						if (t < ttmax) {
@@ -216,7 +211,7 @@ public class BVH extends BVHBase {
 			return Hit.No.get();
 		}
 		
-	} 
+	}
 	
 
 	@Override
