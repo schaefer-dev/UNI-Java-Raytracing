@@ -87,8 +87,6 @@ public class OBJReader {
 		
 		sc.useLocale(Locale.ENGLISH);
 		
-		boolean Kommentar= false;
-		
 		ArrayList<Point> pointList = new ArrayList<Point>();
 		
 		pointList.add(new Point(0,0,0));
@@ -98,83 +96,13 @@ public class OBJReader {
 		
 		while (sc.hasNextLine()){
 			
-			Kommentar =false;
-			
-			if (sc.hasNext(Pattern.compile("#"))){
-				Kommentar=true;
-			}
-			if (sc.hasNext(Pattern.compile("v"))){				
-				boolean error = false;
-				float v1=0;
-				float v2=0;
-				float v3=0;				
-				sc.next();
-				
-				if (sc.hasNextFloat())	{		
-					v1 = sc.nextFloat()*scale;		
-				}
-				else 
-					error = true;
-				if (sc.hasNextFloat()){
-					v2 = sc.nextFloat();
-				}
-				else 
-					error = true;	
-				if (sc.hasNextFloat()){
-					v3 = sc.nextFloat()*scale;
-				}
-				else 
-					error = true;				
-				
-				if (!error){									
-					pointList.add(new Point(v1,v2,v3));	
-				}
-				
-						
-			}
-			if (sc.hasNext(Pattern.compile("f"))){
-				boolean error = false;
-				int f1=0;
-				int f2=0;
-				int f3=0;
-				
-				sc.next();
-				
-				if (sc.hasNextInt())	{
-					f1 = sc.nextInt();		
-				}
-				else 
-					error = true;
-				
-				if (sc.hasNextInt()){
-					f2 = sc.nextInt();
-				}
-				else 
-					error = true;
-				
-				if (sc.hasNextInt()){
-					f3 = sc.nextInt();
-				}
-				else 
-					error = true;
-					
-				
-				if (!error){					
-					
-					Point d1 = pointList.get(f1);
-					Point d2 = pointList.get(f2);
-					Point d3 = pointList.get(f3);
-					
-					if ((d1==null)|(d2==null)|(d3==null)) {
-						
-					}
-					else
-						accelerator.add(new StandardObj((GeomFactory.createTriangle(d1.add(translate),d2.add(translate),d3.add(translate))),shader));
-		
-				}
-				
-			}	
-			sc.nextLine();
+			String c = sc.next();
+			if(c.matches("#"))
+				sc.nextLine();
+			if(c.matches("v"))
+				pointList.add(new Point(sc.nextFloat(), sc.nextFloat(), sc.nextFloat()));
+			if(c.matches("f")) 
+				accelerator.add(new StandardObj(GeomFactory.createTriangle(pointList.get(sc.nextInt()).scale(scale).add(translate), pointList.get(sc.nextInt()).scale(scale).add(translate), pointList.get(sc.nextInt()).scale(scale).add(translate)),shader));
 			
 		}		
 	    System.out.print("Reader finished");
