@@ -35,7 +35,10 @@ public final class ShaderFactory {
 		if (b == null)
 			throw new IllegalArgumentException(
 					"two shaders must be instance values");
-		if (scale < 0)
+		if (scale == Constants.EPS)								// notwendig?
+			throw new UnsupportedOperationException(
+					"scale factor is equal to zero (EPs)");
+		if (scale <= 0)											// = 0 auch abfangen?
 			throw new IllegalArgumentException(
 					"The scale value is not a valid number");
 		if (Float.isNaN(scale))
