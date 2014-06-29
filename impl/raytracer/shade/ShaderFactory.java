@@ -41,6 +41,9 @@ public final class ShaderFactory {
 		if (Float.isNaN(scale))
 			throw new IllegalArgumentException(
 					"The scale value is not a valid number");
+		if (Float.isInfinite(scale))
+			throw new IllegalArgumentException(
+					"The scale value is infinite");
 		if (Constants.isZero(scale))
 			throw new UnsupportedOperationException(
 					"scale factor is equal to zero");
@@ -75,7 +78,8 @@ public final class ShaderFactory {
 		if (Float.isNaN(diffuse) | Float.isNaN(specular)
 				| Float.isNaN(shininess) | (diffuse < 0)
 				| (specular < 0) | (shininess < 0)
-				| (inner == null) | (ambient == null))
+				| (inner == null) | (ambient == null)
+				| Float.isInfinite(diffuse) | Float.isInfinite(specular) | Float.isInfinite(shininess))
 			throw new IllegalArgumentException(
 					"no valid numbers / shader and/or Color == null");
 
