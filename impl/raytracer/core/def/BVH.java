@@ -69,26 +69,7 @@ public class BVH extends BVHBase {
 	 */
 	@Override
 	public void buildBVH() {
-		/*
-		Pair<Point, Point> pair = calculateMinMax();
-		if (!pair.a.equals(pair.b)) {
-			int splitdim = calculateSplitDimension(pair.a.sub(pair.b));
-			float splitpos = 0;
-				splitpos = (pair.b.get(splitdim) + pair.a.get(splitdim)) / 2;
-			BVH a = new BVH();
-			BVH b = new BVH();
-			distributeObjects(a, b, splitdim, splitpos);
-			List<Obj> prim2 = new LinkedList<Obj>();
-			prim2.add(a);
-			prim2.add(b);
-			objList = prim2;
-			if (a.objList.size() > THRESHOLD) {
-				a.buildBVH();
-			}
-			if (b.objList.size() > THRESHOLD) {
-				b.buildBVH();
-			}
-		} */
+
 		Pair<Point, Point> checkMinMax = calculateMinMax();	
 	
 		if ((this.getObjects().size() > THRESHOLD)&(!(checkMinMax.a.equals(checkMinMax.b)))) {
@@ -125,7 +106,6 @@ public class BVH extends BVHBase {
 			}
 
 		}
-		//System.out.print("builded   "); */
 	}
 
 	@Override
@@ -158,9 +138,7 @@ public class BVH extends BVHBase {
 		
 		List<Obj> helpList = this.getObjects();						// Nicht splitten anhand von mitte sondern an getMin() Ecke!
 		
-			// x - achsen split
 			for (Obj o : helpList) {
-				// wenn Mittelpunkt: Point m = o.bbox().getMin().add((o.bbox().getMax().sub(o.bbox().getMin()).scale(0.5f)));
 				Point m = o.bbox().getMin();
 				if (m.get(splitdim)<splitpos)
 					a.add(o);
@@ -172,60 +150,31 @@ public class BVH extends BVHBase {
 
 	@Override
 	public Hit hit(final Ray ray, final Obj obj, final float tmin,
-			final float tmax) {									/* obj -> The object to compute the intersection with*/ 
+			final float tmax) {									/* obj -> The object to compute the intersection with!! */ 
 		// implemened
-			
-	
-		float ttmax=tmax;										
+		float ttmax = tmax;	
 		
-		List<Obj> helpList = this.getObjects();
+		Hit result = Hit.No.get();
 		
-		Hit nearest = Hit.No.get();
-		
-		if (helpList.get(0) instanceof Primitive){ 
+		if (this.bbox().hit(ray, tmin, tmax).hits()) {
 			
-			if (this.bbox().hit(ray, tmin, ttmax).hits()) {
-			
-				for (Obj p : helpList) {
-					final Hit helpHit = p.hit(ray, p, tmin, ttmax);
-					if (helpHit.hits()) {
-						final float t = helpHit.getParameter();
-						if (t < ttmax) {
-							nearest = helpHit;
-							ttmax = t;
-						}
-					}
-				}
+			List<Obj> helpList = this.getObjects();
 
-			}
-			return nearest;
-		}
-		else{ 
-			
-			Obj helpObj = null;
-
-			if (this.bbox().hit(ray,tmin,ttmax).hits()){
-				
-				for (Obj bva : helpList) {
-					Hit helpHit = bva.hit(ray, bva, tmin, ttmax);
-					if (helpHit.hits()) {
-						final float t = helpHit.getParameter();
-						if (t < ttmax) {
-							nearest = helpHit;
-							ttmax = t;
-							helpObj=bva;
+			for (Obj o : helpList) {
+				Hit helpHit = o.hit(ray, o, tmin, tmax);
+				if (helpHit.hits()) {
+					float helpParam = helpHit.getParameter();
+					if (helpParam < ttmax) {
+						result = helpHit;
+						ttmax = helpParam;
 					}		
 				}	
-			}
-			if (helpObj==null)
-				return Hit.No.get();
-			return helpObj.hit(ray, helpObj, tmin, ttmax);
 			
+			}
 		}
-			return Hit.No.get();
-		}
-		
+		return result;
 	}
+		
 	
 
 	@Override
