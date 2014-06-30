@@ -112,16 +112,18 @@ public class OBJReader {
 				Float f3 = 0f;
 				
 				if (sc.hasNextFloat())
-					f1 = sc.nextFloat();
+					f1 = sc.nextFloat()*scale;
 				else
 					error = true;
 				if (sc.hasNextFloat())
-					f2 = sc.nextFloat();
+					f2 = sc.nextFloat()*scale;
 				else
 					error = true;
 				if (sc.hasNextFloat())
-					f3 = sc.nextFloat();
+					f3 = sc.nextFloat()*scale;
 				else
+					error = true;
+				if (sc.hasNextFloat())
 					error = true;
 				
 				if (error){
@@ -136,8 +138,33 @@ public class OBJReader {
 			}
 				
 			if(c.matches("f")) {
-				accelerator.add(new StandardObj(GeomFactory.createTriangle(pointList.get(sc.nextInt()), pointList.get(sc.nextInt()), pointList.get(sc.nextInt())),shader));
-				sc.nextLine();
+				Boolean error = false;
+				int f1 = 0;
+				int f2 = 0;
+				int f3 = 0;
+				
+				if (sc.hasNextInt())
+					f1 = sc.nextInt();
+				else
+					error = true;
+				if (sc.hasNextInt())
+					f2 = sc.nextInt();
+				else
+					error = true;
+				if (sc.hasNextInt())
+					f3 = sc.nextInt();
+				else
+					error = true;
+				if (sc.hasNextInt())
+					error = true;
+				
+				if (error){
+					sc.close();
+					throw new InputMismatchException("File f line is corrupt");
+				}
+				else{
+					accelerator.add(new StandardObj(GeomFactory.createTriangle(pointList.get(f1), pointList.get(f2), pointList.get(f3)),shader));
+				}
 			}
 			
 		}		
