@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -49,7 +50,7 @@ public class OBJReader {
 	public static void read(final String filename,
 			final Accelerator accelerator, final Shader shader, final float scale,
 			final Vec3 translate) throws FileNotFoundException {
-		if ((filename=="")|(accelerator==null)|(shader==null)|(translate==null)|(!translate.isFinite())|(Float.isNaN(scale)|(translate.isInfinity())))
+		if ((accelerator==null)|(shader==null)|(translate==null)|(!translate.isFinite())|(Float.isNaN(scale)|(translate.isInfinity())))
 			throw new IllegalArgumentException("filename or accelerator or shader or translate == null or translate is infinite or scale is no valid float");
 		read(new BufferedInputStream(new FileInputStream(filename)), accelerator, shader, scale, translate);
 	}
@@ -95,18 +96,49 @@ public class OBJReader {
 			
 		/* ab hier schleife über File */
 		
+		
 		while (sc.hasNext()){
 			
 			String c = sc.next();
-			if(c.matches("#"))
+			if(c.matches("#")){
 				sc.nextLine();
+				
+			} // Fehler werfen wenn nicht direkt 3 Punkte, das heißt nur exakt korrekte Eingaben akzeptieren
 			
 			if(c.matches("v")){
-				pointList.add(new Point(sc.nextFloat()*scale, sc.nextFloat()*scale, sc.nextFloat()*scale).add(translate));
+				Boolean error = false;
+				Float f1 = 0f;
+				Float f2 = 0f;
+				Float f3 = 0f;
+				
+				if (sc.hasNextFloat())
+					f1 = sc.nextFloat();
+				else
+					error = true;
+				if (sc.hasNextFloat())
+					f2 = sc.nextFloat();
+				else
+					error = true;
+				if (sc.hasNextFloat())
+					f3 = sc.nextFloat();
+				else
+					error = true;
+				
+				if (error){
+					sc.close();
+					throw new InputMismatchException("File v line is corrupt");
+				}
+				else{
+					pointList.add(new Point(f1, f2, f3).add(translate));
+					sc.nextLine();
+					
+				}
 			}
 				
-			if(c.matches("f")) 
+			if(c.matches("f")) {
 				accelerator.add(new StandardObj(GeomFactory.createTriangle(pointList.get(sc.nextInt()), pointList.get(sc.nextInt()), pointList.get(sc.nextInt())),shader));
+				sc.nextLine();
+			}
 			
 		}		
 	    System.out.print("Reader finished");
