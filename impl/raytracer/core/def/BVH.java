@@ -87,7 +87,7 @@ public class BVH extends BVHBase {
 			distributeObjects(a, b, dimension, mid);
 			
 			objList.clear();
-			boundingBox = BBox.EMPTY;
+			//boundingBox = BBox.EMPTY;
 			
 			
 			if (a.objList.isEmpty())
@@ -136,7 +136,7 @@ public class BVH extends BVHBase {
 	public void distributeObjects(final BVHBase a, final BVHBase b,
 			final int splitdim, final float splitpos) {
 		
-		List<Obj> helpList = this.getObjects();						// Nicht splitten anhand von mitte sondern an getMin() Ecke!
+		List<Obj> helpList = this.getObjects();						
 		
 			for (Obj o : helpList) {
 				Point m = o.bbox().getMin();
