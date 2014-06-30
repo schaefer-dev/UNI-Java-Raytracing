@@ -6,7 +6,6 @@ import java.util.List;
 import raytracer.core.Hit;
 import raytracer.core.Obj;
 import raytracer.geom.BBox;
-import raytracer.geom.Primitive;
 import raytracer.math.Pair;
 import raytracer.math.Point;
 import raytracer.math.Ray;
