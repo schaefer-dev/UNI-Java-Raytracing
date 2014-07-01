@@ -38,7 +38,7 @@ public final class ShaderFactory {
 		if (scale == Constants.EPS)								// notwendig?
 			throw new UnsupportedOperationException(
 					"scale factor is equal to zero (EPs)");
-		if (scale <= 0)											// = 0 auch abfangen?
+		if (scale < 0)											// = 0 auch abfangen?
 			throw new IllegalArgumentException(
 					"The scale value is not a valid number");
 		if (Float.isNaN(scale))
@@ -78,11 +78,11 @@ public final class ShaderFactory {
 	public static Shader createPhong(final Shader inner, final Color ambient,
 			final float diffuse, final float specular, final float shininess) {
 		// Implement this method
-		if (Float.isNaN(diffuse) | Float.isNaN(specular)
-				| Float.isNaN(shininess) | (diffuse < 0)
-				| (specular < 0) | (shininess < 0)
-				| (inner == null) | (ambient == null)
-				| Float.isInfinite(diffuse) | Float.isInfinite(specular) | Float.isInfinite(shininess))
+		if (Float.isNaN(diffuse) || Float.isNaN(specular)
+				|| Float.isNaN(shininess) || (diffuse < 0)
+				|| (specular < 0) || (shininess < 0)
+				|| (inner == null) || (ambient == null)
+				|| Float.isInfinite(diffuse) || Float.isInfinite(specular) || Float.isInfinite(shininess))
 			throw new IllegalArgumentException(
 					"no valid numbers / shader and/or Color == null");
 
