@@ -16,7 +16,7 @@ import raytracer.math.Vec3;
  */
 
 
-// TODO calcMinMax
+
 public class BVH extends BVHBase {
 
 	private List<Obj> objList;
@@ -71,7 +71,7 @@ public class BVH extends BVHBase {
 
 		Pair<Point, Point> checkMinMax = calculateMinMax();	
 	
-		if ((this.getObjects().size() > THRESHOLD)&(!(checkMinMax.a.equals(checkMinMax.b)))) {
+		if ((this.getObjects().size() > THRESHOLD)&&(!(checkMinMax.a.equals(checkMinMax.b)))) {
 		
 			BVH b = new BVH();
 			BVH a = new BVH();
@@ -123,9 +123,9 @@ public class BVH extends BVHBase {
 
 	@Override
 	public int calculateSplitDimension(final Vec3 size) {
-		if ((Math.abs(size.get(0)) >= Math.abs(size.get(1))) & Math.abs(size.get(0)) >= Math.abs(size.get(2)))
+		if ((Math.abs(size.get(0)) >= Math.abs(size.get(1))) && Math.abs(size.get(0)) >= Math.abs(size.get(2)))
 			return 0;
-		if ((Math.abs(size.get(1)) >= Math.abs(size.get(0))) & (Math.abs(size.get(1)) >= Math.abs(size.get(2))))
+		if ((Math.abs(size.get(1)) >= Math.abs(size.get(0))) && (Math.abs(size.get(1)) >= Math.abs(size.get(2))))
 			return 1;
 		else
 			return 2;
