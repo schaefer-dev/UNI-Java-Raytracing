@@ -50,8 +50,6 @@ public class OBJReader {
 	public static void read(final String filename,
 			final Accelerator accelerator, final Shader shader, final float scale,
 			final Vec3 translate) throws FileNotFoundException {
-		if ((accelerator==null)|(shader==null)|(translate==null)|(!translate.isFinite())|(Float.isNaN(scale)|(translate.isInfinity())))
-			throw new IllegalArgumentException("filename or accelerator or shader or translate == null or translate is infinite or scale is no valid float");
 		read(new BufferedInputStream(new FileInputStream(filename)), accelerator, shader, scale, translate);
 	}
 
@@ -83,7 +81,7 @@ public class OBJReader {
 			final Vec3 translate) throws FileNotFoundException {
 		// TODO Implement this method		//Streamtokenizer verwenden?
 		
-		if ((in==null)|(accelerator==null)|(shader==null)|(translate==null)|(!translate.isFinite())|(Float.isNaN(scale)|(translate.isInfinity())))
+		if ((in==null)||(accelerator==null)||(shader==null)||(translate==null)||(!translate.isFinite())||(Float.isNaN(scale)||(translate.isInfinity())))
 			throw new IllegalArgumentException("filename or accelerator or shader or translate == null or translate is infinite or scale is no valid float");
 		
 		java.util.Scanner sc = new java.util.Scanner(in);
@@ -94,7 +92,7 @@ public class OBJReader {
 		
 		pointList.add(new Point(0,0,0));
 			
-		/* ab hier schleife über File */
+		/* ab hier Schleife über File */
 		
 		
 		while (sc.hasNext()){
