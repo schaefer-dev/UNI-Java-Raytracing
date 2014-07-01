@@ -11,15 +11,15 @@ import raytracer.math.Vec2;
 import raytracer.math.Vec3;
 //import raytracer.math.Vec4;
 
-// evt nur als Primitive anlegen?
-class Plane extends BBoxedPrimitive {
+
+class Plane extends BBoxedPrimitive { 
 	private final Vec3 n;
 	private final Point p;
 	private final float d;
 
 	public Plane(final Point a, final Point b, final Point c) {
-		/* TODO BBox super ?? */
-		super(BBox.INF); // BBox Unendlich?
+	
+		super(BBox.INF); 
 
 		Vec3 u = a.sub(b).normalized();
 		Vec3 v = a.sub(c).normalized();
@@ -31,7 +31,7 @@ class Plane extends BBoxedPrimitive {
 	}
 
 	public Plane(final Vec3 n, final Point p) {
-		/* TODO BBox?? */
+		
 		super(BBox.INF); // BBox Unendlich?
 		
 		this.n = n.normalized();
@@ -46,7 +46,7 @@ class Plane extends BBoxedPrimitive {
 			final float tmax) {
 		return new LazyHitTest(obj) {			
 			private Point point = null;
-			// tmin und tmax noch einbauen??
+			
 			private float r;
 
 			@Override
@@ -64,7 +64,7 @@ class Plane extends BBoxedPrimitive {
 			@Override
 			protected boolean calculateHit() {
 				
-				// TODO tmin und tmax einbauen
+				
 
 				float a = d - ray.base().dot(n);
 				float b = ray.dir().dot(n);
@@ -101,11 +101,9 @@ class Plane extends BBoxedPrimitive {
 	@Override
 	public boolean equals(final Object other) {
 		if (other instanceof Plane) {
-			final Plane cobj = (Plane) other;
-			return (cobj.n.equals(n) && (cobj.p.equals(p))); // Muesste richtig
-																// sein? (this
-																// in Klammern
-																// ergänzen?)
+			if ((this.n.normalized()).equals(((Plane)other).n.normalized())&&(this.p.equals(((Plane)other).p)))
+				return true;
+
 		}
 		return false;
 	}
