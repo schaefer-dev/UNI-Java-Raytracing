@@ -166,7 +166,6 @@ public class OBJReader {
 			}
 			
 		}		
-	    System.out.print("Reader finished");
 	    sc.close();
 	    return;
 	}
