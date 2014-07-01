@@ -37,9 +37,6 @@ public class CheckerBoard implements Shader {
 	@Override
 	public Color shade(Hit hit, Trace trace) {
 
-		/*
-		 * float x = hit.getPoint().x(); float z = hit.getPoint().z();
-		 */
 
 		float x = hit.getUV().get(0);
 		float z = hit.getUV().get(1);
